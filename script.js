@@ -22,4 +22,47 @@ window.onload = () => {
 
     recognition.start();
 
-    startButton.textContent = '🎤
+startButton.textContent = '🎤 聆聽中...';
+
+    recognition.onresult = async (event) => {
+      const transcript = event.results[0][0].transcript;
+      userTextDiv.textContent = `👧 你說：「${transcript}」`;
+
+      // 呼叫 ChatGPT API，取得回覆
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer YOUR_OPENAI_API_KEY" // 👈 請替換為你的 API 金鑰
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "你是一位可愛會說中英文的 AI 好朋友，回答要親切、簡單、雙語（中英文）。" },
+            { role: "user", content: transcript }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      const reply = data.choices[0].message.content;
+      aiTextDiv.textContent = `🤖 AI 朋友說：「${reply}」`;
+
+      // 文字轉語音播放
+      const utterance = new SpeechSynthesisUtterance(reply);
+      utterance.lang = 'en-US'; // 可視情況切換為 zh-TW
+      speechSynthesis.speak(utterance);
+
+      startButton.textContent = '🎤 Start Chat';
+    };
+
+    recognition.onerror = (event) => {
+      console.error("語音辨識錯誤：", event.error);
+      startButton.textContent = '🎤 Start Chat';
+    };
+
+    recognition.onend = () => {
+      console.log("語音辨識結束");
+    };
+  });
+};
