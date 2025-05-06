@@ -29,11 +29,11 @@ startButton.textContent = '🎤 聆聽中...';
       userTextDiv.textContent = `👧 你說：「${transcript}」`;
 
       // 呼叫 ChatGPT API，取得回覆
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const response = await fetch("http://localhost:3000/chat", ...), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer YOUR_OPENAI_API_KEY" // 👈 請替換為你的 API 金鑰
+          "Authorization": "Bearer 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" // 👈 請替換為你的 API 金鑰
         },
         body: JSON.stringify({
           model: "gpt-3.5-turbo",
